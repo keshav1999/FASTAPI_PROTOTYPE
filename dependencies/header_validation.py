@@ -4,7 +4,7 @@ import jwt
 from common.app_response import AppResponse
 from common.log_data import ApplicationLogger as applog
 from common.messages import Messages
-from common.secret_manager import SecreteData
+# from common.secret_manager import SecreteData
 from fastapi import HTTPException
 from fastapi import Request, Header
 
@@ -14,7 +14,7 @@ async def jwt_validation_internal(request: Request):
     applog.info(f"JWT VALIDATION INTERNAL TOKEN | requesting headers ")
     headers = request.headers
     applog.info(f"JWT VALIDATION INTERNAL TOKEN | Successfully received headers {headers} ")
-    keys = SecreteData()
+    keys = ""
     app_response = AppResponse()
     key = keys.FRESHWORKS_IVR_JWT_SECRET
     token = None
@@ -41,7 +41,7 @@ async def jwt_validation_external_validation(request: Request):
     applog.info(f"JWT VALIDATION EXTERNAL TOKEN | requesting headers ")
     headers = request.headers
     applog.info(f"JWT VALIDATION EXTERNAL TOKEN | Successfully received headers {headers}")
-    keys = SecreteData()
+    keys = ""
     applog.info("Ending Secreat manager")
     app_response = AppResponse()
     key = keys.FRESHWORKS_EXTERNAL_JWT_SECRET

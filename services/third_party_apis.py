@@ -2,12 +2,12 @@ import traceback
 
 import requests
 from common.log_data import ApplicationLogger as applog
-from common.secret_manager import SecreteData
+# from common.secret_manager import SecreteData
 from fastapi.exceptions import HTTPException
 
 
 def fresh_work_api(data):
-    key = SecreteData()
+    key = "asd"
     try:
         header = {
             "Content-Type": 'application/json',
@@ -39,7 +39,7 @@ def fresh_work_api(data):
 
 
 def fresh_work_api_update(data, fw_external_id, card_last_four_digits):
-    key = SecreteData()
+    key = "sad"
     try:
         header = {
             "Content-Type": 'application/json',

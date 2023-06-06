@@ -10,14 +10,13 @@ from common.log_data import ApplicationLogger as applog
 from common.messages import Messages
 from dependencies.header_validation import jwt_validation_external_validation as jw_val_ext
 from dependencies.header_validation import jwt_validation_internal as jw_val_int
-from dependencies.user import user_check_exist as chk_usr_ext
 from fastapi import APIRouter, Request, Depends
 from fastapi import Header
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
 from repository.schema import card_summary, responses
-from services.ivr_add_fresh_work_manager import add_fresh_work_manager
-from services.ivr_mini_statement_manager import mini_statement_manager
+# from services.ivr_add_fresh_work_manager import add_fresh_work_manager
+# from services.ivr_mini_statement_manager import mini_statement_manager
 
 
 cards_router = APIRouter(
@@ -25,7 +24,7 @@ cards_router = APIRouter(
 )
 
 
-@cards_router.post('/getIVRMiniStatement', dependencies=[Depends(jw_val_ext), Depends(chk_usr_ext)],
+@cards_router.post('/getIVRMiniStatement', dependencies=[Depends(jw_val_ext)],
                    response_model=card_summary, tags=["IVR"],
                    responses={**responses, 200: {"description": "Successful Response",
                 "content": {
@@ -46,7 +45,7 @@ async def ivr_mini_statement_list(request: Request, data: card_summary,
         applog.info(f" IVR MINI STATEMENT | {data.customer_id} | Starting the API call")
         header = request.headers
         applog.info(f" IVR MINI STATEMENT | {data.customer_id} | Calling Manager function")
-        mini_statement_app_response = mini_statement_manager(header, data)
+        mini_statement_app_response = ""
         applog.info(f" IVR MINI STATEMENT | {data.customer_id} | Manager Function executed successfully ")
         if mini_statement_app_response['code'] == 200:
             applog.info(f" IVR MINI STATEMENT | {data.customer_id} | Api executed successfully with 200 status code ")
@@ -82,7 +81,7 @@ async def add_fresh_work_contact(request: Request, user_uuid: UUID,
         applog.info(f"ADD FRESH WORK CONTACT | {user_uuid} | Starting the API call")
         header = request.headers
         applog.info(f"ADD FRESH WORK CONTACT | {user_uuid} | Starting the manager function")
-        add_fresh_response = add_fresh_work_manager(header, user_uuid)
+        add_fresh_response = ""
         applog.info(f"ADD FRESH WORK CONTACT | {user_uuid} |  manager function executed ")
         if add_fresh_response['code'] == 200:
             applog.info(f"ADD FRESH WORK CONTACT | {user_uuid} | API executed ")

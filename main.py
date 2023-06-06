@@ -9,7 +9,6 @@ from fastapi.openapi.utils import get_openapi
 from pydantic import BaseSettings
 
 from routers.cards import cards_router
-from common.secret_manager import SecreteData
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config'))
 from config.custom_log  import log_config
 from common.app_constants import AppConstants
@@ -34,11 +33,7 @@ dictConfig(log_config)
 env_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env')
 load_dotenv(env_file, override=True)
 
-app = FastAPI(docs_url=os.getenv("swagger_url"), redoc_url=os.getenv("doc_url")
-              # servers=[
-              #     {"url": "http://0.0.0.0:5000", "description": "Staging environment"},
-              # ],
-              )
+app = FastAPI()
 
 @app.exception_handler(StarletteHTTPException)
 async def http_exception_handler(request, exc):
@@ -103,7 +98,6 @@ app.include_router(cards_router)
 # calling middleware
 # JwtMiddleWareToken = JwtMiddleWare(logger=logging)
 # app.add_middleware(BaseHTTPMiddleware, dispatch=JwtMiddleWareToken)
-keys = SecreteData()
 if __name__ == "__main__":
-    uvicorn.run('main:app', host="127.0.0.1", port=int(keys.PORT))
+    uvicorn.run('main:app', host="127.0.0.1", port=8000)
     # uvicorn.run(app, host="0.0.0.0", port=5000)
