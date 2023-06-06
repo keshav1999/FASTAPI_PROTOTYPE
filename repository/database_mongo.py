@@ -21,7 +21,7 @@ import pymongo
 
 def pymongo_dev_db():
     try:
-        client = pymongo.MongoClient("mongodb://devadmin:Xn8mEUHZFKXMQtac@13.127.222.211:27017/?directConnection=true&authMechanism=DEFAULT")
+        client = pymongo.MongoClient("")
         database = client["khulkeV1"]
         collection = database["users"]
         return database, collection
