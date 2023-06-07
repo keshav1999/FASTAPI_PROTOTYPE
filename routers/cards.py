@@ -15,16 +15,17 @@ from fastapi import Header
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
 from repository.schema import card_summary, responses
+from services.redis_service import RedisCache
 # from services.ivr_add_fresh_work_manager import add_fresh_work_manager
 # from services.ivr_mini_statement_manager import mini_statement_manager
-
+from services.kafka_service import background_job
 
 cards_router = APIRouter(
     prefix='/cards'
 )
 
 
-@cards_router.post('/getIVRMiniStatement', dependencies=[Depends(jw_val_ext)],
+@cards_router.post('/getIVRMiniStatement', dependencies=[Depends(jw_val_ext)] ,
                    response_model=card_summary, tags=["IVR"],
                    responses={**responses, 200: {"description": "Successful Response",
                 "content": {
@@ -98,3 +99,76 @@ async def add_fresh_work_contact(request: Request, user_uuid: UUID,
         pass
 
 
+@cards_router.get("/fastapi/add_username/")
+async def add_request(request: Request):
+    try:
+        applog.info("Starting api add username")
+        username = request.query_params['id']
+        redis = RedisCache()
+        if username:
+            # final_data = await data.to_list(length=None)
+            # response = {'data': json.loads(JSONEncoder().encode(final_data)), 'message': "Success", 'status': 200}
+            redis.set_redis_cache('_id',username)
+            response = {'data': username,
+                        'message': "Success", 'status': 200}
+        else:
+            response = {'data': "", 'message': "No data found", 'status': 253}
+        applog.info("Ending api Starting api add username")
+        return response
+
+    except Exception as ex:
+        traceback.print_exc()
+        print("Error  At get_username : ", str(ex))
+        return {"Exception": str(ex)}
+
+@cards_router.get("/fastapi/get-user-description/")
+async def get_user_description(request: Request):
+    try:
+        applog.info("Starting api add username")
+        username = request.query_params['id']
+        redis = RedisCache()
+        validate = redis.get_redis_cache('_id')[1]
+        if validate==username:
+            # final_data = await data.to_list(length=None)
+            # response = {'data': json.loads(JSONEncoder().encode(final_data)), 'message': "Success", 'status': 200}
+            key = "user."+"get-user_description."+username
+            data = redis.get_redis_cache(key)
+            response = {'data': data,
+                        'message': "Success", 'status': 200}
+        else:
+            applog.error("Data does not exist in redis getting it from database")
+            response = {'data': "", 'message': "No data found", 'status': 253}
+        applog.info("Ending api Starting api add username")
+        return response
+
+    except Exception as ex:
+        traceback.print_exc()
+        print("Error  At get_username : ", str(ex))
+        return {"Exception": str(ex)}
+
+@cards_router.post("/fastapi/add-user-description/")
+async def add_user_description(request: Request):
+    try:
+        applog.info("Starting api add_user_descriptione")
+        username = request.query_params['id']
+        data = await request.json()
+        redis = RedisCache()
+        validate = redis.get_redis_cache('_id')[1]
+        if validate==username:
+            # final_data = await data.to_list(length=None)
+            # response = {'data': json.loads(JSONEncoder().encode(final_data)), 'message': "Success", 'status': 200}
+            key = "user."+"get-user_description."+username
+            # data = {"description":data['description']}
+            success = redis.set_redis_cache(key,data)
+            background_job(data)
+            response = {'data': data,
+                        'message': success, 'status': 200}
+        else:
+            response = {'data': "", 'message': "No data found", 'status': 253}
+        applog.info("Ending api add_user_description")
+        return response
+
+    except Exception as ex:
+        traceback.print_exc()
+        print("Error  At get_username : ", str(ex))
+        return {"Exception": str(ex)}
